@@ -88,18 +88,19 @@ You can use the Mule Maven Plugin to package your custom policy into a deployabl
 1.Make sure you added the Mule Maven Plugin to your pom.xml file. 
 
 
-<plugin>
+    <plugin>
     <groupId>org.mule.tools.maven</groupId>
     <artifactId>mule-maven-plugin</artifactId>
     <version>${mule.maven.plugin.version}</version>
     <extensions>true</extensions>
-</plugin>
+    </plugin>
 
 
 2.From the command line in your project’s folder, run the install phase:
 
 
-> mvn clean install
+    > mvn clean install
+
 
 
 
@@ -108,6 +109,36 @@ The packager then packages your application and creates the deployable JAR file 
 
 It will also verify that all the necessary files were provided for the packaging, and that the information provided in the mule-artifact and in the policy yaml are valid.
 
+
+
+Uploading the Policy to Exchange :
+
+
+You must configure your Exchange credentials:
+
+
+1. Update the settings.xml with your Exchange credentials.
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <servers>
+    <server>
+       <id>exchange-server</id>
+       <username>myusername</username>
+       <password>mypassword</password>
+     </server>
+  </servers>
+</settings>
+
+
+2. Run mvn deploy to publish the policy to Exchange.
+
+
+
+The custom policy is now available for you to apply to APIs that belong to the specified organization.
 
 
 
