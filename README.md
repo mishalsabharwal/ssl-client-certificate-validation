@@ -17,7 +17,9 @@ The current workflow to get a working policy for Mule 4 that can be applied in A
 4.Apply the policy to any API through API Manager.
 
 
+
 You can clone this respository to implement ssl-client-certificate-validation policy in mule 4.
+
 
 Replace:
 
@@ -28,6 +30,8 @@ Replace:
 ◦Click the name of your organization.
 
 ◦Copy the UUID from the browser address. For example, copy 2a4b93c3-7899-4ea7-9374-f787744d8784 from the URL.
+
+
 
 
 This repository contains the basic four files needed to have a working ssl-client-certificate-validation policy in mule 4.
@@ -60,12 +64,49 @@ This repository contains the basic four files needed to have a working ssl-clien
 
 3) ssl-client-certificate-validator.yaml renders the policy configuration UI. If this file is not provided, the policy won’t be able to be applied through API Platform’s UI.
 
+See (UI-API-Platform file) for "API Platform’s UI"
 
 
 
 4) template.xml where the actual logic of the policy and Mule configuration that defines the policy behavior.
 
 
+
+
+
+
+Packaging a Custom Policy
+
+
+
+
+
+
+You can use the Mule Maven Plugin to package your custom policy into a deployable JAR file that you can later apply to an API.
+
+
+1.Make sure you added the Mule Maven Plugin to your pom.xml file. 
+
+
+<plugin>
+    <groupId>org.mule.tools.maven</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <version>${mule.maven.plugin.version}</version>
+    <extensions>true</extensions>
+</plugin>
+
+
+2.From the command line in your project’s folder, run the install phase:
+
+
+> mvn clean install
+
+
+
+The packager then packages your application and creates the deployable JAR file into the target directory within your project’s folder.
+
+
+It will also verify that all the necessary files were provided for the packaging, and that the information provided in the mule-artifact and in the policy yaml are valid.
 
 
 
