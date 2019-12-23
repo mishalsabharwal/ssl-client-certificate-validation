@@ -1,0 +1,38 @@
+id: SSL Client Certificate Validator
+name: SSL Client Certificate Validator
+description: Policy to validate SSL client certificate parameters from the HTTP headers
+category: Security
+type: custom
+resourceLevelSupported: true
+encryptionSupported: false
+standalone: true
+requiresConnectivity: false
+requiredCharacteristics: []
+providedCharacteristics: [SSL Client Validation]
+configuration:  
+  - propertyName: log-cert-data
+    name: Log Certificate Data
+    description: Select if  the incoming certificate details should be logged for debugging purpose. The log entry will be in INFO mode.
+    type: boolean
+    defaultValue: false
+    optional: true
+    sensitive: false  
+  - propertyName: client-cert-dn
+    name: Client Certificate Distinguished Name
+    description: The full Distinguished Name of the client certificate. This is optional and can be used for more strict validation in case if the API is for a specific consumer only.
+    type: string
+    optional: true
+    sensitive: false
+  - propertyName: client-cert-issuer
+    name: Client Certificate Issuer
+    description: The full Distinguished Name of the issuing certificate. This is optional and can be used for more strict validation in case if the API is for a specific consumer only.
+    type: string
+    optional: true
+    sensitive: false
+  - propertyName: ssl-client-serial
+    name: SSL-Client-Serial
+    description: Contains the serial number used by the CA to identify the client. This is optional and can be used for more strict validation in case if the API is for a specific consumer only.
+    type: string
+    optional: true
+    sensitive: false
+
