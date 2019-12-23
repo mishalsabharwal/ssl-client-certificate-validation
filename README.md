@@ -124,14 +124,14 @@ You must configure your Exchange credentials:
         <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
-    <servers>
-        <server>
-        <id>exchange-server</id>
-        <username>myusername</username>
-        <password>mypassword</password>
-        </server>
-    </servers>
-    </settings>
+        <servers>
+            <server>
+            <id>exchange-server</id>
+            <username>myusername</username>
+            <password>mypassword</password>
+            </server>
+        </servers>
+        </settings>
 
 
 2. Run  mvn deploy   to publish the policy to Exchange.
