@@ -1,93 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
+	  xmlns:http-transform="http://www.mulesoft.org/schema/mule/http-policy-transform"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:http-policy="http://www.mulesoft.org/schema/mule/http-policy"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-               http://www.mulesoft.org/schema/mule/http-policy http://www.mulesoft.org/schema/mule/http-policy/current/mule-http-policy.xsd">
+               http://www.mulesoft.org/schema/mule/http-policy http://www.mulesoft.org/schema/mule/http-policy/current/mule-http-policy.xsd
+http://www.mulesoft.org/schema/mule/http-policy-transform http://www.mulesoft.org/schema/mule/http-policy-transform/current/mule-http-policy-transform.xsd">
+			   
 
-
-    <http-policy:proxy name="{{{policyId}}}-SSL Client Certificate Validator">
-        <http-policy:source>  
-	<set-variable variableName="logCertData"
-			value="{{ log-cert-data }}" />
-	<choice>
-		<when expression="#[flowVars.?logCertData == true]">
-				<logger message="#['X-SSL-Client-Verify: ' + attributes.headers.'X-SSL-Client-Verify' + '| X-SSL-Issuer: ' + attributes.headers.'X-SSL-Issuer' + '| X-SSL-Client-DN: ' + attributes.headers.'X-SSL-Client-DN' + '| X-SSL-Client-Serial: ' + attributes.headers.'X-SSL-Client-Serial']"
-					level="INFO" />
-		</when>
-			<otherwise>
-				<logger message="Certificate Data Logging Not Enabled"
-					level="DEBUG" />
-			</otherwise>
-	</choice>
-	<remove-variable variableName="logCertData" />
-
-		<message-filter onUnaccepted="policyViolation">
-			<expression-filter
-				expression="#[attributes.headers.'X-SSL-Client-Verify' == 'SUCCESS']" />
-		</message-filter>
-
-		<set-variable variableName="clientCertIssuer"
-			value="{{ client-cert-issuer }}" />
-
-	<choice>
-		<when expression="#[flowVars.?clientCertIssuer.trim() != empty]">
-				<message-filter onUnaccepted="policyViolation">
-					<mule:expression-filter
-						expression="#[attributes.headers.'X-SSL-Issuer' == flowVars.clientCertIssuer]" />
-				<message-filter>
-		</when>
-		<otherwise>
-			<logger message="Client Certificate Issuer validation not enabled"
-					level="DEBUG" />
-			</otherwise>
-		</choice>
-
-		<remove-variable variableName="clientCertIssuer" />
-
-		<set-variable variableName="clientCertDN"
-			value="{{ client-cert-dn }}" />
+ <http-policy:proxy name="{{{policyId}}}">
+  <http-policy:source> 
+	{{#if log-cert-data}}
+		<set-variable variableName="logCertData" value="{{ log-cert-data }}" />
+		<logger level="INFO" message="#['X-SSL-Client-Verify: ' + attributes.headers.'X-SSL-Client-Verify' + '| X-SSL-Issuer: ' + attributes.headers.'X-SSL-Issuer' + '| X-SSL-Client-DN: ' + attributes.headers.'X-SSL-Client-DN' + '| X-SSL-Client-Serial: ' + attributes.headers.'X-SSL-Client-Serial']"/>
+			
+	{{else}}
+	<logger level="DEBUG" message="Certificate Data Logging Not Enabled"/>
+	{{/if}}
 
 		<choice>
-			<when expression="#[flowVars.?clientCertDN.trim() != empty]">
-				<message-filter onUnaccepted="policyViolation">
-					<expression-filter
-						expression="#[attributes.headers.'X-SSL-Client-DN' == flowVars.clientCertDN]" />
-				</message-filter>
+			<when expression="#[attributes.headers.'X-SSL-Client-Verify' == 'SUCCESS']">
+				{{#if client-cert-issuer}}
+					<set-variable variableName="clientCertIssuer" value="{{ client-cert-issuer }}" />
+					<choice>
+						<when expression="#[attributes.headers.'X-SSL-Issuer' != vars.clientCertIssuer]">
+							<set-variable variableName="statusCode" value="401" />
+							<set-variable variableName="payload" value="{&quot;Status&quot;: {&quot;Success&quot;: false,&quot;Code&quot;: &quot;SEC-99&quot;,&quot;ErrorDetails&quot;: {&quot;Type&quot;: &quot;Security&quot;,&quot;Message&quot;: &quot;Client SSL certificate verify error&quot;}}}" mimeType="application/json" />
+							<http-transform:set-response statusCode="#[vars.statusCode default attributes.statusCode]">
+							<http-transform:body>#[vars.payload]</http-transform:body>
+							</http-transform:set-response>		
+						</when>	
+					</choice>
+				{{else}}
+					<logger level="DEBUG" message="SSL Client Serial validation not enabled" />
+				{{/if}}
+				{{#if client-cert-dn}}
+					<set-variable variableName="clientCertDN" value="{{ client-cert-dn }}" />
+					<choice>
+						<when expression="#[attributes.headers.'X-SSL-Client-DN' != vars.clientCertDN]">
+							<set-variable variableName="statusCode" value="401" />
+							<set-variable variableName="payload" value="{&quot;Status&quot;: {&quot;Success&quot;: false,&quot;Code&quot;: &quot;SEC-99&quot;,&quot;ErrorDetails&quot;: {&quot;Type&quot;: &quot;Security&quot;,&quot;Message&quot;: &quot;Client SSL certificate verify error&quot;}}}" mimeType="application/json" />
+							<http-transform:set-response statusCode="#[vars.statusCode default attributes.statusCode]">
+							<http-transform:body>#[vars.payload]</http-transform:body>
+							</http-transform:set-response>		
+						</when>
+					</choice>
+				{{else}}
+					<logger level="DEBUG" message="Client Certificate DN validation not enabled" />
+				{{/if}}
+				{{#if ssl-client-serial}}
+					<set-variable variableName="clientSerial" value="{{ ssl-client-serial }}"/>
+					<choice>
+						<when expression="#[attributes.headers.'X-SSL-Client-Serial' != vars.clientSerial]">
+							<set-variable variableName="statusCode" value="401" />
+							<set-variable variableName="payload" value="{&quot;Status&quot;: {&quot;Success&quot;: false,&quot;Code&quot;: &quot;SEC-99&quot;,&quot;ErrorDetails&quot;: {&quot;Type&quot;: &quot;Security&quot;,&quot;Message&quot;: &quot;Client SSL certificate verify error&quot;}}}" mimeType="application/json" />
+							<http-transform:set-response statusCode="#[vars.statusCode default attributes.statusCode]">
+							<http-transform:body>#[vars.payload]</http-transform:body>
+							</http-transform:set-response>
+						</when>	
+					</choice>	
+				{{else}}
+					<logger level="DEBUG" message="Client Certificate Issuer validation not enabled" />
+				{{/if}}
 			</when>
 			<otherwise>
-				<logger message="Client Certificate DN validation not enabled"
-					level="DEBUG" />
+				<set-variable variableName="statusCode" value="401" />
+				<set-variable variableName="payload" value="{&quot;Status&quot;: {&quot;Success&quot;: false,&quot;Code&quot;: &quot;SEC-99&quot;,&quot;ErrorDetails&quot;: {&quot;Type&quot;: &quot;Security&quot;,&quot;Message&quot;: &quot;Client SSL certificate verify error&quot;}}}" mimeType="application/json" />
+				<http-transform:set-response statusCode="#[vars.statusCode default attributes.statusCode]">
+				<http-transform:body>#[vars.payload]</http-transform:body>
+				</http-transform:set-response>
 			</otherwise>
-		</choice>
-
-		<remove-variable variableName="clientCertDN" />
-		
-		<set-variable variableName="clientSerial"
-			value="{{ ssl-client-serial }}" />
-
+		</choice>	
 		<choice>
-			<when expression="#[flowVars.?clientSerial.trim() != empty]">
-				<message-filter onUnaccepted="policyViolation">
-					<expression-filter
-						expression="#[attributes.headers.'X-SSL-Client-Serial' == flowVars.clientSerial]" />
-				</message-filter>
+			<when expression="#[vars.statusCode !='401']">
+				<http-policy:execute-next/>
 			</when>
-			<otherwise>
-				<logger message="SSL Client Serial validation not enabled"
-					level="DEBUG" />
-			</otherwise>
-		</choice>
-
-         <http-policy:execute-next/>
-		<processor-chain name="policyViolation">
-		<set-property propertyName="http.status" value="401" />
-		<set-payload
-			value="{&quot;Status&quot;: {&quot;Success&quot;: false,&quot;Code&quot;: &quot;SEC-99&quot;,&quot;ErrorDetails&quot;: {&quot;Type&quot;: &quot;Security&quot;,&quot;Message&quot;: &quot;Client SSL certificate verify error&quot;}}}"
-			mimeType="application/json" />
-	</processor-chain>
-          
-     </http-policy:source>
-  </http-policy:proxy>
+		</choice>	
+    </http-policy:source>
+ </http-policy:proxy>
 </mule>
 
