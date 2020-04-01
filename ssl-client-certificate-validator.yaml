@@ -1,6 +1,6 @@
-id: SSL Client Certificate Validator
-name: SSL Client Certificate Validator
-description: Policy to validate SSL client certificate parameters from the HTTP headers
+id: ssl client certificate validation
+name: ssl client certificate validation
+description: Custom policy for mule 4 to validate SSL client certificate parameters in HTTP headers
 category: Security
 type: custom
 resourceLevelSupported: true
@@ -35,4 +35,5 @@ configuration:
     type: string
     optional: true
     sensitive: false
+
 
