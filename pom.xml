@@ -4,18 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>xxxx</groupId>
-    <artifactId>ssl-client-certificate-validator</artifactId>
+    <groupId>b93e7956-61fc-415c-86c6-d7c7a6ed2df4</groupId>
+    <artifactId>ssl-client-certificate-validation</artifactId>
     <version>1.0.0</version>
 
-    <name>SSL Client Certificate Validator</name>
-    <description>Policy to validate SSL client certificate parameters from the HTTP headers</description>
+    <name>ssl client certificate validation</name>
+    <description>Custom policy for mule 4 to validate SSL client certificate parameters in HTTP headers</description>
 
     <packaging>mule-policy</packaging>
 
     <properties>
-        <mule.maven.plugin.version>3.2.7</mule.maven.plugin.version>
-        <exchange.url>https://maven.anypoint.mulesoft.com/api/v1/organizations/xxxx/maven</exchange.url>
+        <mule.maven.plugin.version>3.3.5</mule.maven.plugin.version>
+        <exchange.url>https://maven.anypoint.mulesoft.com/api/v1/organizations/b93e7956-61fc-415c-86c6-d7c7a6ed2df4/maven</exchange.url>
     </properties>
 
 
@@ -62,6 +62,22 @@
             <layout>default</layout>
         </repository>
     </distributionManagement>
+	
+	<dependencies>
+       <dependency>
+           <groupId>com.mulesoft.anypoint</groupId>
+           <artifactId>mule-http-policy-transform-extension</artifactId>
+		   <version>3.0.0</version>
+		   <classifier>mule-plugin</classifier>
+			<exclusions>
+				<exclusion>
+					<groupId>org.mule.connectors</groupId>
+					<artifactId>mule-http-connector</artifactId>
+				</exclusion>
+			</exclusions>
+       </dependency>
+	   
+   </dependencies>
 
     <pluginRepositories>
         <pluginRepository>
