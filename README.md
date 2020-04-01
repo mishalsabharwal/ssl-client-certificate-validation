@@ -1,4 +1,4 @@
-# ssl-client-certificate-validator
+# ssl-client-certificate-validation
 Custom policy for mule 4 to validate SSL client certificate parameters in HTTP headers (APIGW 2.x)
 
 
