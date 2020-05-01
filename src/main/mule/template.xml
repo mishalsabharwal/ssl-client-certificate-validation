@@ -12,8 +12,8 @@ http://www.mulesoft.org/schema/mule/http-policy-transform http://www.mulesoft.or
   <http-policy:source> 
 	{{#if log-cert-data}}
 		<set-variable variableName="logCertData" value="{{ log-cert-data }}" />
-		<logger level="INFO" message="#['X-SSL-Client-Verify: ' + attributes.headers.'X-SSL-Client-Verify' + '| X-SSL-Issuer: ' + attributes.headers.'X-SSL-Issuer' + '| X-SSL-Client-DN: ' + attributes.headers.'X-SSL-Client-DN' + '| X-SSL-Client-Serial: ' + attributes.headers.'X-SSL-Client-Serial']"/>
-			
+		<logger level="INFO" message="X-SSL-Client-Verify: #[attributes.headers.'X-SSL-Client-Verify']  | X-SSL-Issuer:  #[attributes.headers.'X-SSL-Issuer'] | X-SSL-Client-DN:  #[attributes.headers.'X-SSL-Client-DN']  | X-SSL-Client-Serial:  #[attributes.headers.'X-SSL-Client-Serial']"/>
+		
 	{{else}}
 	<logger level="DEBUG" message="Certificate Data Logging Not Enabled"/>
 	{{/if}}
